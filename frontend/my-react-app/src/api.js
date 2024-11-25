@@ -83,10 +83,10 @@ export const registerCompany = async ({
   });
 };
 
-export const loginCompany = async ({ email, password }) => {
+export const loginCompany = async ({ name, password }) => {
   await sleep();
-  return api.post(`"/api/login-company`, {
-    email,
+  return api.post(`/api/login-company`, {
+    name,
     password,
   });
 };
@@ -118,4 +118,29 @@ export const companyPutReview = async (productId, { stars, text }) => {
 export const companyGetReviews = async (productId) => {
   await sleep();
   return api.get(`/api/products/${productId}/reviews`);
+};
+
+export const companyGetCompanies = async () => {
+  await sleep();
+  return api.get(`/api/companies`);
+};
+
+export const companySendMessage = async (body) => {
+  await sleep();
+  return api.post(`/api/send-message`, body);
+};
+
+export const companyGetMessages = async (companyId, body) => {
+  await sleep();
+  return api.get(`/api/get-messages/${companyId}`, body);
+};
+
+export const pinMessage = async (messageId) => {
+  await sleep();
+  return api.post(`/api/pin-message/${messageId}`);
+};
+
+export const unpinMessage = async (messageId) => {
+  await sleep();
+  return api.post(`/api/unpin-message/${messageId}`);
 };

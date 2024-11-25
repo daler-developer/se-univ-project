@@ -8,6 +8,9 @@ import CompanyLogin from './pages/CompanyLogin.jsx';
 import CompanyHome from './pages/CompanyHome.jsx';
 import CompanyPostProduct from './pages/CompanyPostProduct.jsx';
 import CompanyMyProducts from './pages/CompanyMyProducts.jsx';
+import CompanyStore from './components/CompanyStore.jsx';
+import CompanyCompaniesList from './pages/CompanyCompaniesList.jsx';
+import CompanyChat from './pages/CompanyChat.jsx';
 
 const router = createBrowserRouter([
   {
@@ -33,6 +36,18 @@ const router = createBrowserRouter([
   {
     path: '/company/my-products',
     element: <CompanyMyProducts />,
+  },
+  {
+    path: '/company/store',
+    element: <CompanyStore />,
+  },
+  {
+    path: '/company/companies',
+    element: <CompanyCompaniesList />,
+  },
+  {
+    path: '/company/companies/:companyId/chat',
+    element: <CompanyChat />,
   },
   {
     path: '/delivery-service/register',

@@ -3,7 +3,7 @@ import { relations } from "drizzle-orm";
 
 const companies = pgTable("companies", {
   id: serial("id").primaryKey(),
-  email: varchar("email", { length: 256 }),
+  name: varchar("name", { length: 256 }),
   password: varchar("password", { length: 256 }),
   profilePicture: varchar("profilePicture", { length: 256 }),
   description: varchar("description", { length: 256 }),

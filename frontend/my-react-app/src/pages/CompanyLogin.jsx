@@ -10,7 +10,7 @@ import { useAuthStore } from '../store.js';
 const CompanyLogin = () => {
   // State to hold form values
   const [formData, setFormData] = useState({
-    email: '',
+    name: '',
     password: '',
   });
 
@@ -61,10 +61,10 @@ const CompanyLogin = () => {
         {/* Email */}
         <Input
           className="w-full"
-          type="email"
+          type="text"
           placeholder="Email"
-          name="email"
-          value={formData.email}
+          name="name"
+          value={formData.name}
           onChange={handleChange}
           required
         />

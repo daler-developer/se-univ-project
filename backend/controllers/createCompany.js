@@ -1,6 +1,6 @@
 import db from "../db.js";
 import { companies, deliveryServices, products, messages, productReviews, companyProductPurchases } from "../entities.js";
-import { eq } from "drizzle-orm";
+import { eq, or, and, desc, asc } from "drizzle-orm";
 
 const init = (app) => {
   app.post("/api/create-company", async (req, res) => {
@@ -29,15 +29,15 @@ const init = (app) => {
 
   app.post("/api/login-company", async (req, res) => {
     try {
-      const { email, password } = req.body;
+      const { name, password } = req.body;
 
       // Validate that email and password are provided
-      if (!email || !password) {
+      if (!name || !password) {
         return res.status(400).json({ error: "Email and password are required." });
       }
 
       // Check if the company exists by email
-      const company = await db.select().from(companies).where(eq(companies.email, email)).limit(1);
+      const company = await db.select().from(companies).where(eq(companies.name, name)).limit(1);
 
       if (company.length === 0) {
         return res.status(404).json({ error: "Company not found." });
@@ -53,6 +53,19 @@ const init = (app) => {
     } catch (error) {
       console.error("Error during company login:", error);
       res.status(500).json({ error: "An error occurred while trying to log in." });
+    }
+  });
+
+  app.get("/api/companies", async (req, res) => {
+    try {
+      // Query to get all companies
+      const result = await db.select().from(companies);
+
+      // Return the list of companies
+      res.status(200).json(result);
+    } catch (error) {
+      console.error("Error retrieving companies list:", error);
+      res.status(500).json({ error: "An error occurred while retrieving the companies list." });
     }
   });
 
@@ -268,7 +281,7 @@ const init = (app) => {
           stars: productReviews.stars,
           company: {
             id: companies.id,
-            name: companies.email,
+            name: companies.name,
             profilePicture: companies.profilePicture,
           },
         })
@@ -422,11 +435,11 @@ const init = (app) => {
           receiverId: parseInt(receiverId),
           isPinned: false, // Default is not pinned
         })
-        .returning({ id: messages.id });
+        .returning();
 
       // If the insertion was successful, return the message ID
       if (result.length > 0) {
-        res.status(201).json({ messageId: result[0].id });
+        res.status(201).json({ message: result[0] });
       } else {
         res.status(500).json({ error: "Failed to send message." });
       }
@@ -436,27 +449,42 @@ const init = (app) => {
     }
   });
 
-  app.post("/api/get-messages/:companyId", async (req, res) => {
+  app.get("/api/get-messages/:companyId", async (req, res) => {
     try {
-      // Extract senderId from headers and receiverId from request body
+      // Extract senderId from params and receiverId from request body
       const senderId = req.params.companyId;
-      const { receiverId } = req.body;
+      const receiverId = req.headers["company-id"];
 
       // Validate that senderId and receiverId are provided
       if (!senderId) {
-        return res.status(400).json({ error: "Sender ID (company-id) is required in headers." });
+        return res.status(400).json({ error: "Sender ID (company-id) is required in params." });
       }
       if (!receiverId) {
         return res.status(400).json({ error: "Receiver ID is required in the body." });
       }
 
-      // Query to select messages between the two companies
+      // Query to select messages between the two companies and join with the sender details
       const messageHistory = await db
-        .select()
+        .select({
+          messageId: messages.id,
+          text: messages.text,
+          isPinned: messages.isPinned,
+          createdAt: messages.createdAt,
+          sender: {
+            id: companies.id,
+            name: companies.name,
+            profilePicture: companies.profilePicture,
+          },
+        })
         .from(messages)
-        .where(messages.senderId.eq(parseInt(senderId)).and(messages.receiverId.eq(parseInt(receiverId))))
-        .orWhere(messages.senderId.eq(parseInt(receiverId)).and(messages.receiverId.eq(parseInt(senderId))))
-        .orderBy(messages.createdAt.desc());
+        .leftJoin(companies, eq(messages.senderId, companies.id))
+        .where(
+          or(
+            and(eq(messages.senderId, senderId), eq(messages.receiverId, parseInt(receiverId))),
+            and(eq(messages.senderId, parseInt(receiverId)), eq(messages.receiverId, parseInt(senderId))),
+          ),
+        )
+        .orderBy(asc(messages.createdAt));
 
       // Return the messages between the two companies
       res.status(200).json(messageHistory);
@@ -482,7 +510,38 @@ const init = (app) => {
         .set({
           isPinned: true,
         })
-        .where(messages.id.eq(parseInt(messageId)));
+        .where(eq(messages.id, messageId));
+
+      // Check if the message was successfully updated
+      if (result.length === 0) {
+        return res.status(404).json({ error: "Message not found." });
+      }
+
+      // Return success response
+      res.status(200).json({ message: "Message pinned successfully." });
+    } catch (error) {
+      console.error("Error pinning message:", error);
+      res.status(500).json({ error: "An error occurred while pinning the message." });
+    }
+  });
+
+  app.post("/api/unpin-message/:messageId", async (req, res) => {
+    try {
+      // Extract messageId from params
+      const { messageId } = req.params;
+
+      // Validate that messageId is provided
+      if (!messageId) {
+        return res.status(400).json({ error: "Message ID is required in parameters." });
+      }
+
+      // Update the message to set isPinned to true
+      const result = await db
+        .update(messages)
+        .set({
+          isPinned: false,
+        })
+        .where(eq(messages.id, messageId));
 
       // Check if the message was successfully updated
       if (result.length === 0) {
