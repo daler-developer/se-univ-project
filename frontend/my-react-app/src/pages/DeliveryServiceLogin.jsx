@@ -6,6 +6,7 @@ import Typography from '@mui/joy/Typography';
 import { deliveryServiceLogin } from '../api.js';
 import { useAuthStore } from '../store.js';
 import Error from '../components/Error.jsx';
+import { Link, useNavigate } from 'react-router-dom';
 
 const DeliveryServiceLogin = () => {
   // State to hold form values
@@ -13,6 +14,8 @@ const DeliveryServiceLogin = () => {
     name: '',
     password: '',
   });
+
+  const navigate = useNavigate();
 
   const { setDeliveryService } = useAuthStore();
 
@@ -28,6 +31,7 @@ const DeliveryServiceLogin = () => {
         JSON.stringify(data.deliveryService)
       );
       setDeliveryService(data.deliveryService);
+      navigate('/delivery-service/home');
     },
     onError(data) {
       console.log('data', data);
@@ -94,6 +98,15 @@ const DeliveryServiceLogin = () => {
             {mutation.isPending ? 'Logging in...' : 'Login'}
           </Button>
         </div>
+        <Typography level="body2" className="text-center mt-4">
+          Don't have an account?{' '}
+          <Link
+            to="/delivery-service/register"
+            className="text-teal-600 hover:underline"
+          >
+            Register
+          </Link>
+        </Typography>
       </form>
     </div>
   );

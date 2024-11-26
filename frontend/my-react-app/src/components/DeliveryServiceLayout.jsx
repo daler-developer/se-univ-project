@@ -8,23 +8,18 @@ const DeliveryServiceLayout = ({ children }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('deliveryService');
-    navigate('/entry');
+    navigate('/');
   };
 
   return (
     <div>
       <Header
-        links={[
-          {
-            label: 'Home',
-            link: '/home',
-          },
-        ]}
+        links={[]}
         logoUrl={me.logoUrl}
         deliveryName={me.name}
         onLogout={handleLogout}
       />
-      Hello world
+      {children}
     </div>
   );
 };

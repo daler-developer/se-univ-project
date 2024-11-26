@@ -13,7 +13,7 @@ const companies = pgTable("companies", {
 
 const deliveryServices = pgTable("delivery_services", {
   id: serial("id").primaryKey(),
-  name: varchar("email", { length: 256 }),
+  name: varchar("name", { length: 256 }),
   logoUrl: varchar("logoUrl", { length: 256 }),
   password: varchar("password", { length: 256 }),
   phone: varchar("phone", { length: 256 }),

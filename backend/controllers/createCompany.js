@@ -299,7 +299,8 @@ const init = (app) => {
 
   app.post("/api/purchase-product", async (req, res) => {
     try {
-      const { productId, companyId, deliveryServiceId } = req.body;
+      const companyId = req.headers["company-id"];
+      const { productId, deliveryServiceId } = req.body;
 
       // Validate that productId and companyId are provided
       if (!productId || !companyId) {
@@ -320,6 +321,11 @@ const init = (app) => {
 
       // If the insertion was successful, return the productId and companyId
       if (result.length > 0) {
+        await db
+          .update(products)
+          .set({ purchasesCount: 10 })
+          .where(eq(products.id, parseInt(productId)));
+
         res.status(201).json({ productId: result[0].productId, companyId: result[0].companyId });
       } else {
         res.status(500).json({ error: "Failed to create a purchase record." });
@@ -342,10 +348,13 @@ const init = (app) => {
 
       // Query to select purchase history for the company
       const purchaseHistory = await db
-        .select()
+        .select({
+          ...companyProductPurchases,
+          product: products,
+        })
         .from(companyProductPurchases)
-        .leftJoin(products, companyProductPurchases.productId.eq(products.id))
-        .where(companyProductPurchases.companyId.eq(parseInt(companyId)));
+        .leftJoin(products, eq(companyProductPurchases.productId, products.id))
+        .where(eq(companyProductPurchases.companyId, parseInt(companyId)));
 
       // Return the purchase history
       res.status(200).json(purchaseHistory);
@@ -365,11 +374,14 @@ const init = (app) => {
         return res.status(400).json({ error: "Delivery Service ID is required in headers." });
       }
 
-      // Query to select purchases where the deliveryServiceId matches
+      // Query to select purchases where the deliveryServiceId matches, including all product fields
       const assignedPurchases = await db
-        .select()
+        .select({
+          ...companyProductPurchases,
+          product: products,
+        })
         .from(companyProductPurchases)
-        .leftJoin(products, eq(companyProductPurchases.productId, product.id))
+        .leftJoin(products, eq(companyProductPurchases.productId, products.id))
         .where(eq(companyProductPurchases.deliveryServiceId, deliveryServiceId));
 
       // Return the assigned purchases
@@ -397,7 +409,7 @@ const init = (app) => {
         .set({
           status: "DELIVERED",
         })
-        .where(companyProductPurchases.id.eq(parseInt(purchaseId)));
+        .where(eq(companyProductPurchases.id, parseInt(purchaseId)));
 
       // Check if the purchase was successfully updated
       if (result.length === 0) {

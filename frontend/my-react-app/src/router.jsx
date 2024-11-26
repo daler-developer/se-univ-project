@@ -8,9 +8,10 @@ import CompanyLogin from './pages/CompanyLogin.jsx';
 import CompanyHome from './pages/CompanyHome.jsx';
 import CompanyPostProduct from './pages/CompanyPostProduct.jsx';
 import CompanyMyProducts from './pages/CompanyMyProducts.jsx';
-import CompanyStore from './components/CompanyStore.jsx';
+import CompanyStore from './pages/CompanyStore.jsx';
 import CompanyCompaniesList from './pages/CompanyCompaniesList.jsx';
 import CompanyChat from './pages/CompanyChat.jsx';
+import CompanyPurchaseHistory from './pages/CompanyPurchaseHistory.jsx';
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
   {
     path: '/company/store',
     element: <CompanyStore />,
+  },
+  {
+    path: '/company/purchase-history',
+    element: <CompanyPurchaseHistory />,
   },
   {
     path: '/company/companies',

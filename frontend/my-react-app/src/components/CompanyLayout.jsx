@@ -8,7 +8,7 @@ const CompanyLayout = ({ children }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('deliveryService');
-    navigate('/entry');
+    navigate('/');
   };
 
   return (
@@ -17,7 +17,7 @@ const CompanyLayout = ({ children }) => {
         links={[
           {
             label: 'Home',
-            link: '/company/home',
+            to: '/company/store',
           },
         ]}
         logoUrl={me.logoUrl}

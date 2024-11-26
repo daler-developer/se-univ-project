@@ -5,6 +5,7 @@ import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
 import { deliveryServiceRegister } from '../api.js';
 import { useAuthStore } from '../store.js';
+import { Link } from 'react-router-dom';
 
 const DeliveryServiceRegister = () => {
   // State to hold form values
@@ -21,7 +22,6 @@ const DeliveryServiceRegister = () => {
   const mutation = useMutation({
     mutationFn: async (data) => {
       const response = await deliveryServiceRegister(data);
-
       return response.data;
     },
     onSuccess(data) {
@@ -118,9 +118,18 @@ const DeliveryServiceRegister = () => {
             color="primary"
             loading={mutation.isPending}
           >
-            {mutation.isPending ? 'Submitting...' : 'Login'}
+            {mutation.isPending ? 'Submitting...' : 'Register'}
           </Button>
         </div>
+        <Typography level="body2" className="text-center mt-4">
+          Already have an account?{' '}
+          <Link
+            to="/delivery-service-login"
+            className="text-teal-600 hover:underline"
+          >
+            Login
+          </Link>
+        </Typography>
       </form>
     </div>
   );

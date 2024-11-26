@@ -28,6 +28,7 @@ const CompanyLogin = () => {
     onSuccess: (data) => {
       localStorage.setItem('company', JSON.stringify(data.company));
       setCompany(data.company);
+      navigate('/company/store');
     },
   });
 

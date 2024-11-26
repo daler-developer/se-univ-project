@@ -4,7 +4,7 @@ import Typography from '@mui/joy/Typography';
 import Button from '@mui/joy/Button';
 import Avatar from '@mui/joy/Avatar';
 
-const Header = ({ companyName, logoUrl, onLogout }) => {
+const Header = ({ companyName, logoUrl, onLogout, links }) => {
   return (
     <header className="flex items-center justify-between px-8 py-4 bg-white text-gray-800 shadow-md">
       <div className="flex items-center">
@@ -18,30 +18,15 @@ const Header = ({ companyName, logoUrl, onLogout }) => {
         </Typography>
       </div>
       <nav className="flex items-center space-x-6">
-        <Link
-          to="/home"
-          className="text-lg font-medium hover:text-teal-600 transition duration-300"
-        >
-          Home
-        </Link>
-        <Link
-          to="/about"
-          className="text-lg font-medium hover:text-teal-600 transition duration-300"
-        >
-          About
-        </Link>
-        <Link
-          to="/services"
-          className="text-lg font-medium hover:text-teal-600 transition duration-300"
-        >
-          Services
-        </Link>
-        <Link
-          to="/contact"
-          className="text-lg font-medium hover:text-teal-600 transition duration-300"
-        >
-          Contact
-        </Link>
+        {links.map((link) => (
+          <Link
+            key={link.to}
+            to={link.to}
+            className="text-lg font-medium hover:text-teal-600 transition duration-300"
+          >
+            {link.label}
+          </Link>
+        ))}
       </nav>
       <Button
         variant="outlined"

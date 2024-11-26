@@ -59,7 +59,7 @@ export const deliveryServiceLogin = async ({ name, password }) => {
   });
 };
 
-export const getAssignedDeliveries = async ({ name, password }) => {
+export const getAssignedDeliveries = async () => {
   await sleep();
   return api.get(`/api/assigned-purchases`);
 };
@@ -143,4 +143,29 @@ export const pinMessage = async (messageId) => {
 export const unpinMessage = async (messageId) => {
   await sleep();
   return api.post(`/api/unpin-message/${messageId}`);
+};
+
+export const getProducts = async () => {
+  await sleep();
+  return api.get(`/api/products`);
+};
+
+export const getDeliveryServices = async () => {
+  await sleep();
+  return api.get(`/api/delivery-services`);
+};
+
+export const purchaseProduct = async (body) => {
+  await sleep();
+  return api.post(`/api/purchase-product`, body);
+};
+
+export const markDelivered = async (purchaseId) => {
+  await sleep();
+  return api.post(`/api/mark-delivered/${purchaseId}`);
+};
+
+export const companyPurchaseHistory = async () => {
+  await sleep();
+  return api.get(`/api/purchase-history`);
 };
